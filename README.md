@@ -14,4 +14,6 @@ Mini-app to help with studying triangles with following restrictions:
 - angle CAB is right
 - the triangle area value is the largest of all triangles that fit above restrictions
 
+If triangle for the given point A is not found, it won't be drawn.
+
 [Problem source](https://vk.com/wall-79831037_1869)
