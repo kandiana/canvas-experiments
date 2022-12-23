@@ -6,46 +6,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Max square triangle</title>
     <style>
+      * {
+        box-sizing: border-box;
+      }
+
       body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        margin: 0;
+        padding: 0;
       }
 
       button {
+        height: 25px;
+        padding: 0 10px;
         cursor: pointer;
       }
 
       .wrapper {
         display: flex;
-        justify-content: center;
-        gap: 100px;
+        padding: 20px;
+        margin: 0 auto;
+        gap: min(100px, 10vw);
+        width: fit-content;
+      }
+
+      a {
+        display: block;
+        margin-bottom: 20px;
       }
 
       .field {
         border: 2px solid black;
       }
 
+      fieldset {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 15px 15px;
+      }
+
+      fieldset:not(:last-child) {
+        margin-bottom: 20px;
+      }
+
       fieldset p {
         display: flex;
         gap: 50px;
+        margin: 0;
+      }
+
+      fieldset button {
+        align-self: flex-start;
       }
 
       .label {
         width: 100px;
       }
 
+      p:not(:last-child) {
+        margin-bottom: 10px;
+      }
+
+      .label span {
+        display: block;
+        margin-bottom: 3px;
+      }
+
       .input {
         max-width: 100%;
+        height: 25px;
       }
 
       .points {
+        margin: 0 0 20px;
         padding: 0;
         list-style: none;
       }
 
       .item {
         display: flex;
+      }
+
+      .item:not(:last-child) {
+        margin-bottom: 10px;
       }
 
       .item .label:not(:first-child) {
@@ -61,6 +103,7 @@
   <body>
     <div class="wrapper">
       <form class="controls">
+        <a href="https://vk.com/wall-79831037_1869" target="_blank">Problem source</a>
         <fieldset>
           <legend>Field size</legend>
           <p>
@@ -210,27 +253,32 @@
         let k = 0;
         let prevS = 0;
         let prevParams = {};
-        while (true) {
+        while (k < 180) {
           const angle = start + Math.PI * (k / 180);
+          // point B on circle with radius r1
           const x2 = r1 * Math.cos(angle) + x0;
           const y2 = r1 * Math.sin(angle) + y0;
 
+          // perpendicular line equation params (as in ax + by + c = 0)
           const a = x2 - x1;
           const b = y2 - y1;
           const c = -a * x1 - b * y1;
           const a2b2 = a ** 2 + b ** 2;
-          const ddd = (a * x0 + b * y0 + c) / a2b2;
-          const x = x0 - a * ddd;
-          const y = y0 - b * ddd;
+          const shiftParam = (a * x0 + b * y0 + c) / a2b2;
+          // point on line perpendicular to AB that's closest to circles center
+          const x = x0 - a * shiftParam;
+          const y = y0 - b * shiftParam;
 
-          const d12 = dist(x1, y1, x2, y);
+          // distance from point A to point C(3)
           const d13 = dist(x1, y1, x, y) + Math.sqrt(r2 ** 2 - sqDist(x0, y0, x, y));
           const mult = Math.sqrt(d13 ** 2 / a2b2);
           const multSigned = -b * (x - x1) > 0 ? -mult : mult;
+          // point C coordinates (on circle with radius r2)
           const x3 = x1 + b * multSigned;
           const y3 = y1 - a * multSigned;
 
-          const s = (dist(x1, y1, x2, y2) * dist(x1, y1, x3, y3)) / 2;
+          // triangle square
+          const s = (dist(x1, y1, x2, y2) * d13) / 2;
           if (s < prevS) {
             return prevParams;
           }
