@@ -212,25 +212,30 @@
         let prevParams = {};
         while (k < 180) {
           const angle = start + Math.PI * (k / 180);
+          // point B on circle with radius r1
           const x2 = r1 * Math.cos(angle) + x0;
           const y2 = r1 * Math.sin(angle) + y0;
 
+          // perpendicular line equation params (as in ax + by + c = 0)
           const a = x2 - x1;
           const b = y2 - y1;
           const c = -a * x1 - b * y1;
           const a2b2 = a ** 2 + b ** 2;
-          const ddd = (a * x0 + b * y0 + c) / a2b2;
-          const x = x0 - a * ddd;
-          const y = y0 - b * ddd;
+          const shiftParam = (a * x0 + b * y0 + c) / a2b2;
+          // point on line perpendicular to AB that's closest to circles center
+          const x = x0 - a * shiftParam;
+          const y = y0 - b * shiftParam;
 
-          const d12 = dist(x1, y1, x2, y);
+          // distance from point A to point C(3)
           const d13 = dist(x1, y1, x, y) + Math.sqrt(r2 ** 2 - sqDist(x0, y0, x, y));
           const mult = Math.sqrt(d13 ** 2 / a2b2);
           const multSigned = -b * (x - x1) > 0 ? -mult : mult;
+          // point C coordinates (on circle with radius r2)
           const x3 = x1 + b * multSigned;
           const y3 = y1 - a * multSigned;
 
-          const s = (dist(x1, y1, x2, y2) * dist(x1, y1, x3, y3)) / 2;
+          // triangle square
+          const s = (dist(x1, y1, x2, y2) * d13) / 2;
           if (s < prevS) {
             return prevParams;
           }
