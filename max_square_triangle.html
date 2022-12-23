@@ -168,7 +168,7 @@
       <canvas class="field" id="field"></canvas>
     </div>
     <script>
-      const triangleParams = {
+      const DEFAULT_PARAMS = {
         width: 600,
         height: 600,
         x0: 300,
@@ -177,6 +177,8 @@
         r2: 250,
         a: [{ xa: 150, ya: 200 }],
       };
+      const triangleParams =
+        JSON.parse(localStorage.getItem('max-area-triangle-params')) || DEFAULT_PARAMS;
       const POINT_R = 3;
 
       const field = document.getElementById('field');
@@ -204,6 +206,7 @@
         xInput.value = x;
         xInput.addEventListener('change', (e) => {
           triangleParams.a[i].xa = Number(e.target.value);
+          localStorage.setItem('max-area-triangle-params', JSON.stringify(triangleParams));
           draw();
         });
 
@@ -220,6 +223,7 @@
         yInput.value = y;
         yInput.addEventListener('change', (e) => {
           triangleParams.a[i].ya = Number(e.target.value);
+          localStorage.setItem('max-area-triangle-params', JSON.stringify(triangleParams));
           draw();
         });
 
@@ -231,6 +235,7 @@
         button.textContent = '-';
         button.addEventListener('click', (e) => {
           triangleParams.a.splice(i, 1);
+          localStorage.setItem('max-area-triangle-params', JSON.stringify(triangleParams));
           pointsList.textContent = '';
           triangleParams.a.forEach(({ xa, ya }, i) => addPoint(xa, ya, i));
           draw();
@@ -246,6 +251,7 @@
       addPointButton.addEventListener('click', (e) => {
         const i = triangleParams.a.length;
         triangleParams.a.push({});
+        localStorage.setItem('max-area-triangle-params', JSON.stringify(triangleParams));
         addPoint(undefined, undefined, i);
         addPointButton.scrollIntoView();
       });
@@ -350,33 +356,39 @@
 
       widthInput.addEventListener('change', (e) => {
         triangleParams.width = Number(e.target.value);
+        localStorage.setItem('max-area-triangle-params', JSON.stringify(triangleParams));
         field.width = triangleParams.width;
         draw();
       });
 
       heightInput.addEventListener('change', (e) => {
         triangleParams.height = Number(e.target.value);
+        localStorage.setItem('max-area-triangle-params', JSON.stringify(triangleParams));
         field.height = triangleParams.height;
         draw();
       });
 
       circleXInput.addEventListener('change', (e) => {
         triangleParams.x0 = Number(e.target.value);
+        localStorage.setItem('max-area-triangle-params', JSON.stringify(triangleParams));
         draw();
       });
 
       circleYInput.addEventListener('change', (e) => {
         triangleParams.y0 = Number(e.target.value);
+        localStorage.setItem('max-area-triangle-params', JSON.stringify(triangleParams));
         draw();
       });
 
       circleR1Input.addEventListener('change', (e) => {
         triangleParams.r1 = Number(e.target.value);
+        localStorage.setItem('max-area-triangle-params', JSON.stringify(triangleParams));
         draw();
       });
 
       circleR2Input.addEventListener('change', (e) => {
         triangleParams.r2 = Number(e.target.value);
+        localStorage.setItem('max-area-triangle-params', JSON.stringify(triangleParams));
         draw();
       });
 
