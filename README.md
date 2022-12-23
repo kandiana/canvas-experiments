@@ -2,7 +2,7 @@
 
 This repository is a collection of my experiments with canvas created while I'm learning to work with it.
 
-## [Max area triangle](https://kandiana.github.io/canvas-experiments/max_square_triangle.html)
+## [Max area triangle](https://kandiana.github.io/canvas-experiments/max_area_triangle.html)
 
 Mini-app to help with studying triangles with following restrictions:
 
