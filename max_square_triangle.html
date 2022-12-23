@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Max square triangle</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .wrapper {
+        display: flex;
+        justify-content: center;
+        gap: 100px;
+      }
+
+      .field {
+        border: 2px solid black;
+      }
+
+      fieldset p {
+        display: flex;
+        gap: 50px;
+      }
+
+      .label {
+        width: 100px;
+      }
+
+      .input {
+        max-width: 100%;
+      }
+
+      .points {
+        padding: 0;
+        list-style: none;
+      }
+
+      .item {
+        display: flex;
+      }
+
+      .item .label:not(:first-child) {
+        margin-left: 50px;
+      }
+
+      .item button {
+        margin-left: 30px;
+        align-self: flex-end;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <form class="controls">
+        <fieldset>
+          <legend>Field size</legend>
+          <p>
+            <label class="label">
+              <span>width</span>
+              <input type="number" class="input" id="width" />
+            </label>
+            <label class="label">
+              <span>height</span>
+              <input type="number" class="input" id="height" />
+            </label>
+          </p>
+        </fieldset>
+        <fieldset>
+          <legend>Circles params</legend>
+          <p>
+            <label class="label">
+              <span>x</span>
+              <input type="number" class="input" id="x0" />
+            </label>
+            <label class="label">
+              <span>y</span>
+              <input type="number" class="input" id="y0" />
+            </label>
+          </p>
+          <p>
+            <label class="label">
+              <span>r1</span>
+              <input type="number" class="input" id="r1" />
+            </label>
+            <label class="label">
+              <span>r2</span>
+              <input type="number" class="input" id="r2" />
+            </label>
+          </p>
+        </fieldset>
+        <fieldset>
+          <legend>Point A positions</legend>
+          <ul class="points" id="points"></ul>
+          <button type="button" id="add-point">Add new point</button>
+        </fieldset>
+      </form>
+      <canvas class="field" id="field"></canvas>
+    </div>
+    <script>
+      const triangleParams = {
+        width: 600,
+        height: 600,
+        x0: 300,
+        y0: 300,
+        r1: 100,
+        r2: 250,
+        a: [{ xa: 150, ya: 200 }],
+      };
+      const POINT_R = 3;
+
+      const field = document.getElementById('field');
+      const fieldContext = field.getContext('2d');
+      const widthInput = document.getElementById('width');
+      const heightInput = document.getElementById('height');
+      const circleXInput = document.getElementById('x0');
+      const circleYInput = document.getElementById('y0');
+      const circleR1Input = document.getElementById('r1');
+      const circleR2Input = document.getElementById('r2');
+      const pointsList = document.getElementById('points');
+      const addPointButton = document.getElementById('add-point');
+
+      const addPoint = (x, y, i) => {
+        const listItem = document.createElement('li');
+        listItem.className = 'item';
+
+        const xLabel = document.createElement('label');
+        xLabel.className = 'label';
+        const xSpan = document.createElement('span');
+        xSpan.textContent = 'x';
+        const xInput = document.createElement('input');
+        xInput.className = 'input';
+        xInput.type = 'number';
+        xInput.value = x;
+        xInput.addEventListener('change', (e) => {
+          triangleParams.a[i].xa = Number(e.target.value);
+          draw();
+        });
+
+        xLabel.appendChild(xSpan);
+        xLabel.appendChild(xInput);
+
+        const yLabel = document.createElement('label');
+        yLabel.className = 'label';
+        const ySpan = document.createElement('span');
+        ySpan.textContent = 'y';
+        const yInput = document.createElement('input');
+        yInput.className = 'input';
+        yInput.type = 'number';
+        yInput.value = y;
+        yInput.addEventListener('change', (e) => {
+          triangleParams.a[i].ya = Number(e.target.value);
+          draw();
+        });
+
+        yLabel.appendChild(ySpan);
+        yLabel.appendChild(yInput);
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = '-';
+        button.addEventListener('click', (e) => {
+          triangleParams.a.splice(i, 1);
+          pointsList.textContent = '';
+          triangleParams.a.forEach(({ xa, ya }, i) => addPoint(xa, ya, i));
+          draw();
+        });
+
+        listItem.appendChild(xLabel);
+        listItem.appendChild(yLabel);
+        listItem.appendChild(button);
+
+        pointsList.appendChild(listItem);
+      };
+
+      addPointButton.addEventListener('click', (e) => {
+        const i = triangleParams.a.length;
+        triangleParams.a.push({});
+        addPoint(undefined, undefined, i);
+      });
+
+      widthInput.value = triangleParams.width;
+      heightInput.value = triangleParams.height;
+      circleXInput.value = triangleParams.x0;
+      circleYInput.value = triangleParams.y0;
+      circleR1Input.value = triangleParams.r1;
+      circleR2Input.value = triangleParams.r2;
+
+      triangleParams.a.forEach(({ xa, ya }, i) => addPoint(xa, ya, i));
+
+      field.width = triangleParams.width;
+      field.height = triangleParams.height;
+
+      const sqDist = (x1, y1, x2, y2) => (x2 - x1) ** 2 + (y2 - y1) ** 2;
+      const dist = (x1, y1, x2, y2) => Math.sqrt(sqDist(x1, y1, x2, y2));
+
+      const findTriangleCoordinates = (x0, y0, x1, y1, r1, r2) => {
+        const d = dist(x0, y0, x1, y1);
+        const tan = (y0 - y1) / (x0 - x1);
+        const inc = 1;
+        const start = Math.atan(tan);
+        let k = 0;
+        let prevS = 0;
+        let prevParams = {};
+        while (true) {
+          const angle = start + Math.PI * (k / 180);
+          const x2 = r1 * Math.cos(angle) + x0;
+          const y2 = r1 * Math.sin(angle) + y0;
+
+          const a = x2 - x1;
+          const b = y2 - y1;
+          const c = -a * x1 - b * y1;
+          const a2b2 = a ** 2 + b ** 2;
+          const ddd = (a * x0 + b * y0 + c) / a2b2;
+          const x = x0 - a * ddd;
+          const y = y0 - b * ddd;
+
+          const d12 = dist(x1, y1, x2, y);
+          const d13 = dist(x1, y1, x, y) + Math.sqrt(r2 ** 2 - sqDist(x0, y0, x, y));
+          const mult = Math.sqrt(d13 ** 2 / a2b2);
+          const multSigned = -b * (x - x1) > 0 ? -mult : mult;
+          const x3 = x1 + b * multSigned;
+          const y3 = y1 - a * multSigned;
+
+          const s = (dist(x1, y1, x2, y2) * dist(x1, y1, x3, y3)) / 2;
+          if (s < prevS) {
+            return prevParams;
+          }
+          prevS = s;
+          prevParams = { x1, y1, x2, y2, x3, y3 };
+          k = (k + inc) % 360;
+        }
+      };
+
+      const draw = () => {
+        const { width, height, x0, y0, r1, r2, a } = triangleParams;
+        fieldContext.lineWidth = 2;
+
+        fieldContext.clearRect(0, 0, width, height);
+        fieldContext.beginPath();
+        fieldContext.arc(x0, y0, POINT_R, 0, 2 * Math.PI, false);
+        fieldContext.fill();
+        fieldContext.moveTo(x0 + r1, y0);
+        fieldContext.arc(x0, y0, r1, 0, 2 * Math.PI, false);
+        fieldContext.moveTo(x0 + r2, y0);
+        fieldContext.arc(x0, y0, r2, 0, 2 * Math.PI, false);
+        fieldContext.stroke();
+
+        a.forEach(({ xa, ya }) => {
+          if (typeof xa !== 'number' || typeof ya !== 'number') {
+            return;
+          }
+
+          const { x1, y1, x2, y2, x3, y3 } = findTriangleCoordinates(x0, y0, xa, ya, r1, r2);
+          fieldContext.beginPath();
+          fieldContext.moveTo(x1, y1);
+          fieldContext.arc(x1, y1, POINT_R, 0, 2 * Math.PI, false);
+          fieldContext.fill();
+          fieldContext.moveTo(x2, y2);
+          fieldContext.arc(x2, y2, POINT_R - 1, 0, 2 * Math.PI, false);
+          fieldContext.fill();
+          fieldContext.moveTo(x3, y3);
+          fieldContext.arc(x3, y3, POINT_R - 1, 0, 2 * Math.PI, false);
+          fieldContext.fill();
+          fieldContext.moveTo(x1, y1);
+          fieldContext.lineTo(x2, y2);
+          fieldContext.lineTo(x3, y3);
+          fieldContext.lineTo(x1, y1);
+          fieldContext.stroke();
+        });
+      };
+
+      widthInput.addEventListener('change', (e) => {
+        triangleParams.width = Number(e.target.value);
+        field.width = triangleParams.width;
+        draw();
+      });
+
+      heightInput.addEventListener('change', (e) => {
+        triangleParams.height = Number(e.target.value);
+        field.height = triangleParams.height;
+        draw();
+      });
+
+      circleXInput.addEventListener('change', (e) => {
+        triangleParams.x0 = Number(e.target.value);
+        draw();
+      });
+
+      circleYInput.addEventListener('change', (e) => {
+        triangleParams.y0 = Number(e.target.value);
+        draw();
+      });
+
+      circleR1Input.addEventListener('change', (e) => {
+        triangleParams.r1 = Number(e.target.value);
+        draw();
+      });
+
+      circleR2Input.addEventListener('change', (e) => {
+        triangleParams.r2 = Number(e.target.value);
+        draw();
+      });
+
+      draw();
+    </script>
+  </body>
+</html>
