@@ -16,7 +16,7 @@
       }
 
       button {
-        height: 25px;
+        min-height: 25px;
         padding: 0 10px;
         cursor: pointer;
       }
@@ -45,8 +45,6 @@
       }
 
       fieldset {
-        display: flex;
-        flex-direction: column;
         padding: 10px 15px 15px;
       }
 
@@ -67,6 +65,16 @@
       .points-wrapper {
         max-height: max(calc(100vh - 400px), 150px);
         overflow: auto;
+      }
+
+      @-moz-document url-prefix() {
+        .controls {
+          padding-right: 16px;
+        }
+
+        .points-wrapper {
+          padding-right: 31px;
+        }
       }
 
       .label {
