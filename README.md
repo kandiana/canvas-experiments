@@ -1,6 +1,6 @@
 # Canvas experiments
 
-This repository is a collection of my experiments with canvas while I'm learning to work with it.
+This repository is a collection of my experiments with canvas created while I'm learning to work with it.
 
 ## Max square triangle
 
