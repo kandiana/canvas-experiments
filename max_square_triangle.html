@@ -34,8 +34,14 @@
         margin-bottom: 20px;
       }
 
+      .controls {
+        height: calc(100vh - 50px);
+        overflow: auto;
+      }
+
       .field {
         border: 2px solid black;
+        align-self: flex-start;
       }
 
       fieldset {
@@ -56,6 +62,11 @@
 
       fieldset button {
         align-self: flex-start;
+      }
+
+      .points-wrapper {
+        max-height: max(calc(100vh - 400px), 150px);
+        overflow: auto;
       }
 
       .label {
@@ -140,7 +151,7 @@
             </label>
           </p>
         </fieldset>
-        <fieldset>
+        <fieldset class="points-wrapper">
           <legend>Point A positions</legend>
           <ul class="points" id="points"></ul>
           <button type="button" id="add-point">Add new point</button>
@@ -228,6 +239,7 @@
         const i = triangleParams.a.length;
         triangleParams.a.push({});
         addPoint(undefined, undefined, i);
+        addPointButton.scrollIntoView();
       });
 
       widthInput.value = triangleParams.width;
