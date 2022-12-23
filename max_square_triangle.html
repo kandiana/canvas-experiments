@@ -6,12 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Max square triangle</title>
     <style>
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         margin: 0;
         padding: 0;
       }
 
       button {
+        height: 25px;
+        padding: 0 10px;
         cursor: pointer;
       }
 
@@ -19,7 +25,7 @@
         display: flex;
         padding: 20px;
         margin: 0 auto;
-        gap: 100px;
+        gap: min(100px, 10vw);
         width: fit-content;
       }
 
@@ -27,26 +33,56 @@
         border: 2px solid black;
       }
 
+      fieldset {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 15px 15px;
+      }
+
+      fieldset:not(:last-child) {
+        margin-bottom: 20px;
+      }
+
       fieldset p {
         display: flex;
         gap: 50px;
+        margin: 0;
+      }
+
+      fieldset button {
+        align-self: flex-start;
       }
 
       .label {
         width: 100px;
       }
 
+      p:not(:last-child) {
+        margin-bottom: 10px;
+      }
+
+      .label span {
+        display: block;
+        margin-bottom: 3px;
+      }
+
       .input {
         max-width: 100%;
+        height: 25px;
       }
 
       .points {
+        margin: 0 0 20px;
         padding: 0;
         list-style: none;
       }
 
       .item {
         display: flex;
+      }
+
+      .item:not(:last-child) {
+        margin-bottom: 10px;
       }
 
       .item .label:not(:first-child) {
