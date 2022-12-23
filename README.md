@@ -1,8 +1,13 @@
 # Canvas experiments
+
 This repository is a collection of my experiments with canvas while I'm learning to work with it.
 
 ## Max square triangle
+
+[Link](https://kandiana.github.io/canvas-experiments/max_square_triangle.html)
+
 Mini-app to help with studying triangles with following restrictions:
+
 - one of triangle verticies is in point A
 - one of triangle verticies (B) lies on smaller of cocentric circles
 - one of triangle verticies (C) lies on larger of cocentric circles
